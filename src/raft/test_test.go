@@ -19,6 +19,29 @@ import "sync"
 // (much more than the paper's range of timeouts).
 const RaftElectionTimeout = 1000 * time.Millisecond
 
+// TestRepeatedElections3A 进行重复的3A测试
+func TestRepeatedElections3A(t *testing.T) {
+	// 重复运行次数
+	repeats := 100
+
+	for i := 1; i <= repeats; i++ {
+		t.Run(fmt.Sprintf("Run %d", i), func(t *testing.T) {
+			defer func() {
+				if r := recover(); r != nil {
+					t.Fatalf("第 %d 次测试失败: %v", i, r)
+				}
+			}()
+
+			// 运行测试函数
+			TestInitialElection3A(t)
+			TestReElection3A(t)
+			TestManyElections3A(t)
+		})
+	}
+
+	fmt.Println("所有测试通过")
+}
+
 func TestInitialElection3A(t *testing.T) {
 	servers := 3
 	cfg := make_config(t, servers, false, false)
